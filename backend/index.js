@@ -7,12 +7,15 @@ const multer = require("multer");
 const path = require("path");
 const cors = require("cors");
 
+const {cloudinaryConnect} = require("./config/cloudinary");
+const {uploadImageToCloudinary} = require("./utils/imageUploader");
+
 app.use(express.json());
 app.use(cors());
 
 // Database Connection with MongoDB
 mongoose.connect("mongodb+srv://ksoham242003:2003_soham@cluster0.x51dxp8.mongodb.net/Coding_Club");
-
+cloudinaryConnect();
 
 // API Creation
 
@@ -33,10 +36,21 @@ const upload = multer({storage:storage})
 // Creating Upload Endpoint for images
 app.use('/images',express.static('upload/images'))
 
-app.post('/upload',upload.single('product'),(req,res)=>{
+// app.post('/upload',upload.single('product'),(req,res)=>{
+//     res.json({
+//         success:1,
+//         image_url: `http://localhost:${port}/images/${req.file.filename}`
+//     })
+// })
+
+app.post('/upload', async (req,res)=>{
+    
+    const thumbnail = req.files;
+    console.log("Image:", thumbnail);
+    // const thumbnailImage = await uploadImageToCloudinary(thumbnail, process.env.FOLDER_NAME);
     res.json({
         success:1,
-        image_url: `http://localhost:${port}/images/${req.file.filename}`
+        // image_url: thumbnailImage.secure_url
     })
 })
 
